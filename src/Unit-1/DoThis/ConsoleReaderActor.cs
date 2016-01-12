@@ -11,11 +11,11 @@ namespace WinTail
     {
         public const string StartCommand = "start";
         public const string ExitCommand = "exit";
-        private IActorRef _consoleWriterActor;
+        private IActorRef _validationActor;
 
-        public ConsoleReaderActor(IActorRef consoleWriterActor)
+        public ConsoleReaderActor(IActorRef validationActor)
         {
-            _consoleWriterActor = consoleWriterActor;
+            _validationActor = validationActor;
         }
 
         protected override void OnReceive(object message)
@@ -24,49 +24,24 @@ namespace WinTail
 	        {
 		        DoPrintInstructions();
 	        }
-	        else if (message is Messages.InputError)
-	        {
-		        _consoleWriterActor.Tell(message as Messages.InputError);
-	        }
-
+	        
 	        GetAndValidateInput();
         }
 
 	    private void GetAndValidateInput()
 	    {
 		    var message = Console.ReadLine();
-		    if (string.IsNullOrEmpty(message))
-		    {
-			    Self.Tell(new Messages.NullInputError("No input received."));
-		    }
-			else if (string.Equals(message, ExitCommand, StringComparison.OrdinalIgnoreCase))
+
+			if (string.IsNullOrEmpty(message) == false 
+				&& string.Equals(message, ExitCommand, StringComparison.OrdinalIgnoreCase))
 			{
 				// shut down allow process to exit.
 				Context.System.Shutdown();
-			}
-			else
-			{
-				var valid = IsValid(message);
-				if (valid)
-				{
-					_consoleWriterActor.Tell(new Messages.InputSuccess("Message valid :)."));
-
-					// continue loop
-					Self.Tell(new Messages.ContinueProcessing());
-				}
-				else
-				{
-					Self.Tell(new Messages.ValidationError("Had odd number of chars, bad for some reason."));
-				}
+				return;
 			}
 
+			_validationActor.Tell(message);
 	    }
-
-	    private bool IsValid(string message)
-	    {
-			var valid = message.Length % 2 == 0;
-			return valid;
-		}
 
 	    private void DoPrintInstructions()
 	    {
