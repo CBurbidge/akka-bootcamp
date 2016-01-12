@@ -48,7 +48,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ValidationActor.cs" />
+    <Compile Include="FileObserver.cs" />
+    <Compile Include="TailActor.cs" />
+    <Compile Include="TailCoordinatorActor.cs" />
+    <Compile Include="FileValidatorActor.cs" />
     <Compile Include="ConsoleReaderActor.cs" />
     <Compile Include="Messages.cs" />
     <Compile Include="ConsoleWriterActor.cs" />
@@ -58,6 +61,11 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="log.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
