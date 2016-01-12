@@ -11,13 +11,7 @@ namespace WinTail
     {
         public const string StartCommand = "start";
         public const string ExitCommand = "exit";
-        private IActorRef _validationActor;
-
-        public ConsoleReaderActor(IActorRef validationActor)
-        {
-            _validationActor = validationActor;
-        }
-
+        
         protected override void OnReceive(object message)
         {
 	        if (message.Equals(StartCommand))
@@ -40,10 +34,10 @@ namespace WinTail
 				return;
 			}
 
-			_validationActor.Tell(message);
-	    }
+			Context.ActorSelection("akka://MyActorSystem/user/validationActor").Tell(message);
+		}
 
-	    private void DoPrintInstructions()
+		private void DoPrintInstructions()
 	    {
 			Console.WriteLine("Please provide the URI of a log file on disk.\n");
 		}
